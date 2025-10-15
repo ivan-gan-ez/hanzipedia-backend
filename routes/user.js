@@ -16,8 +16,11 @@ const { isValidUser, isAdmin } = require("../middleware/auth");
 // GET /users
 router.get("/", isAdmin, async (req, res) => {
   try {
+    const search = req.query.search;
+    const mode = req.query.mode;
+    const role = req.query.role;
     const sort = req.query.sort;
-    const users = await getUsers(sort);
+    const users = await getUsers(search, mode, role, sort);
     res.status(200).send(users);
   } catch (error) {
     console.log(error);

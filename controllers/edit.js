@@ -13,7 +13,7 @@ const getEdits = async (page, user) => {
     filter.user = user;
   }
 
-  return await Edit.find(filter).populate("user").sort({ time: 1 });
+  return await Edit.find(filter).populate("user").sort({ time: -1 });
 };
 
 // get one specific edit by id

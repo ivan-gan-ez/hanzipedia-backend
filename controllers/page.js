@@ -21,7 +21,7 @@ const getPages = async (radical, pinyin, sort, featured) => {
     filter.radical = radical;
   }
   if (pinyin) {
-    pinyinRegex = new RegExp(String.raw`^${pinyin}`, "g");
+    pinyinRegex = new RegExp(String.raw`^${pinyin}`, "ig");
   }
   if (featured) {
     filter.featured = true;
@@ -89,10 +89,12 @@ const updatePage = async (
 // update a page
 const featurePage = async (hanzi, featured) => {
   const updatedPage = await Page.findByIdAndUpdate(
-    hanzi,
+    converter(hanzi),
     { featured: featured },
     { new: true }
   );
+
+  return updatedPage;
 };
 
 // delete a page

@@ -2,16 +2,31 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const getUsers = async (sort) => {
-  return await User.find().sort(
-    sort === "lastupdated"
-      ? { updatedAt: -1 }
-      : sort === "name"
-      ? { name: 1, updatedAt: -1 }
-      : sort === "edits"
-      ? { numberOfEdits: -1, updatedAt: -1 }
-      : { updatedAt: -1 }
-  );
+const getUsers = async (search, mode, role, sort) => {
+  let filter = {};
+  let regex = "";
+
+  if (search) {
+    regex = new RegExp(String.raw`${search}`, "ig");
+  }
+
+  if (role) {
+    filter.role = role;
+  }
+
+  return await User.find(filter)
+    .regex(mode, regex)
+    .sort(
+      sort === "lastupdated"
+        ? { updatedAt: -1 }
+        : sort === "name"
+        ? { name: 1, updatedAt: -1 }
+        : sort === "email"
+        ? { email: 1, updatedAt: -1 }
+        : sort === "edits"
+        ? { numberOfEdits: -1, updatedAt: -1 }
+        : { updatedAt: -1 }
+    );
 };
 
 const getUserbyEmail = async (email) => {
