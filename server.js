@@ -14,7 +14,7 @@ async function connectToMongoDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URL + "hanzipedia");
   } catch (error) {
-    console.log("server asleep. sory");
+    console.log(error);
   }
 }
 
