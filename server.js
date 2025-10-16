@@ -13,6 +13,7 @@ app.use(cors());
 async function connectToMongoDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URL + "hanzipedia");
+    console.log("Server connected!");
   } catch (error) {
     console.log(error);
   }

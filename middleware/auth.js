@@ -30,7 +30,7 @@ const isValidUser = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error: "der er or" });
+    res.status(400).send({ error: error.message });
   }
 };
 
@@ -64,7 +64,7 @@ const isAdmin = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error: "der er or" });
+    res.status(400).send({ error: error.message });
   }
 };
 
@@ -98,7 +98,7 @@ const isOwner = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error: "der er or" });
+    res.status(400).send({ error: error.message });
   }
 };
 
