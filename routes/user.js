@@ -24,7 +24,7 @@ router.get("/", isAdmin, async (req, res) => {
     res.status(200).send(users);
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -36,7 +36,7 @@ router.get("/:id", isValidUser, async (req, res) => {
     res.status(200).send(user);
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -50,7 +50,7 @@ router.post("/signup", async (req, res) => {
     res.status(200).send(user);
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
     res.status(200).send(user);
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -77,7 +77,7 @@ router.post("/", isAdmin, async (req, res) => {
     res.status(200).send(user);
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -89,11 +89,24 @@ router.put("/:id", isValidUser, async (req, res) => {
     const role = req.body.role;
     const numberOfEdits = req.body.numberOfEdits;
     const pfp = req.body.pfp;
-    const user = await updateUser(id, name, role, numberOfEdits, pfp);
-    res.status(200).send(user);
+
+    const user = await getUserbyId(id);
+
+    if (
+      (req.user.role === "admin" &&
+        ((user.role !== "admin" && user.role !== "owner") ||
+          user._id.toString() === req.user._id.toString())) ||
+      (req.user.role === "user" &&
+        user._id.toString() === req.user._id.toString())
+    ) {
+      const user = await updateUser(id, name, role, numberOfEdits, pfp);
+      res.status(200).send(user);
+    } else {
+      res.status(400).send({ error: "Thou shalt not edit." });
+    }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -101,12 +114,25 @@ router.put("/:id", isValidUser, async (req, res) => {
 router.delete("/:id", isValidUser, async (req, res) => {
   try {
     const id = req.params.id;
-    await deleteUser(id);
+    const user = await getUserbyId(id);
 
-    res.status(200).send({ message: `User ${id} has been deleted.` });
+    if (
+      (req.user.role === "owner" &&
+        user._id.toString() !== req.user._id.toString()) ||
+      (req.user.role === "admin" &&
+        ((user.role !== "admin" && user.role !== "owner") ||
+          user._id.toString() === req.user._id.toString())) ||
+      (req.user.role === "user" &&
+        user._id.toString() === req.user._id.toString())
+    ) {
+      await deleteUser(id);
+      res.status(200).send({ message: `User ${id} has been deleted.` });
+    } else {
+      res.status(400).send({ error: "Thou shalt not kill." });
+    }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: "Unknown error." });
+    res.status(400).send({ error: "Unknown error." });
   }
 });
 
