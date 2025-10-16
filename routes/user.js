@@ -93,6 +93,7 @@ router.put("/:id", isValidUser, async (req, res) => {
     const user = await getUserbyId(id);
 
     if (
+      req.user.role === "owner" ||
       (req.user.role === "admin" &&
         ((user.role !== "admin" && user.role !== "owner") ||
           user._id.toString() === req.user._id.toString())) ||
